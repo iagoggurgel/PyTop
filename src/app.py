@@ -1,6 +1,10 @@
 from fastapi import FastAPI
 from .process import ProcessSensor
+from .cpu import CPUSensor
 from .config import ENV
+from .memory import RAMSensor
+from threading import Thread
+import os, signal
 
 app = FastAPI(
     title="PyTop",
@@ -8,21 +12,41 @@ app = FastAPI(
     version="BETA"
 )
 
+processSensor = ProcessSensor()
+cpuSensor = CPUSensor()
+ramSensor = RAMSensor()
+
+processThread = Thread(
+    target=processSensor.scanProcesses
+)
+
+cpuThread = Thread(
+    target=cpuSensor.scanCPU
+)
+
+ramThread = Thread(
+    target=ramSensor.scanRAM
+)
+
+processThread.start()
+cpuThread.start()
+ramThread.start()
+
 @app.get("/process/")
 def getProcesses():
-    return ProcessSensor().toJson()
+    return processSensor.toJson()
 
 @app.get("/cpu/")
-def getCpuUsage():
-    return "<p>Hello, World!<p>"
+def getCPUInfo():
+    return cpuSensor.toJson()
 
 @app.get("/disk/")
 def getDiskUsage():
     return "<p>Hello, World!<p>"
 
 @app.get("/memory/")
-def getMemoryUsage():
-    return "<p>Hello, World!<p>"
+def getRAMUsage():
+    return ramSensor.toJson()
 
 @app.get("/network/")
 def getNetworkUsage():
@@ -30,4 +54,5 @@ def getNetworkUsage():
 
 @app.post("/kill/")
 def killProcess(pid: int):
-    return {"process" : pid}
+    os.kill(pid, signal.SIGKILL)
+    return {"message": f"Process {pid} killed successfully!"}
