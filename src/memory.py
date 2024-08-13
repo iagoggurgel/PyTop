@@ -20,8 +20,7 @@ class RAMSensor():
     
     def toJson(self) -> str:
         return dumps(
-            obj=self.RAM.toDict(),
-            indent=4,
+            obj=self.RAM.toDict()
         )
 
 @dataclass()

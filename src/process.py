@@ -33,8 +33,7 @@ class ProcessSensor():
         for process in self.processList:
             _.append(process.toDict())
         return dumps(
-            obj=_,
-            indent=4,
+            obj=_
         )
 
 @dataclass()

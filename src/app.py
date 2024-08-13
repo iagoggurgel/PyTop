@@ -40,19 +40,21 @@ def getProcesses():
 def getCPUInfo():
     return cpuSensor.toJson()
 
-@app.get("/disk/")
-def getDiskUsage():
-    return "<p>Hello, World!<p>"
-
 @app.get("/memory/")
 def getRAMUsage():
     return ramSensor.toJson()
 
-@app.get("/network/")
-def getNetworkUsage():
-    return "<p>Hello, World!<p>"
-
-@app.post("/kill/")
+@app.post("/signal/kill")
 def killProcess(pid: int):
     os.kill(pid, signal.SIGKILL)
     return {"message": f"Process {pid} killed successfully!"}
+
+@app.post("/signal/pause")
+def pauseProcess(pid: int):
+    os.kill(pid, signal.SIGSTOP)
+    return {"message": f"Process {pid} paused successfully!"}
+
+@app.post("/signal/continue")
+def continueProcess(pid: int):
+    os.kill(pid, signal.SIGCONT)
+    return {"message": f"Process {pid} continued successfully!"}

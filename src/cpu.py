@@ -18,8 +18,7 @@ class CPUSensor():
     
     def toJson(self) -> str:
         return dumps(
-            obj=self.CPU.toDict(),
-            indent=4,
+            obj=self.CPU.toDict()
         )
     
 

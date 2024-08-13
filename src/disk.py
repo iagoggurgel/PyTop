@@ -20,7 +20,6 @@ class DiskSensor():
     def toJson(self) -> str:
         return dumps(
             obj=self.disk.toDict(),
-            indent=4,
         )
 
 @dataclass()
