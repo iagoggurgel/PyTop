@@ -2,7 +2,7 @@
 
 This document shall provide an initial plan on what information should be captured for the user.
 
-# PROCESS
+# PROCESS OK
 
 1. PID
 2. NAME
@@ -10,7 +10,7 @@ This document shall provide an initial plan on what information should be captur
 4. COMMAND
 5. MEMORY
 
-# CPU 
+# CPU OK
 
 1. NAME
 2. CORES
@@ -19,7 +19,7 @@ This document shall provide an initial plan on what information should be captur
     - CACHE SIZE
     - TLB SIZE
 
-# RAM
+# RAM OK
 
 1. TOTAL
 2. USED
