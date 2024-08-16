@@ -11,8 +11,8 @@ Server for monitoring purposes.
 3. Install the requirements into the virtual enviroment.
 4. Run the command below
 
-´´´
+```
 fastapi dev src/app.py
-´´´
+```
 
 To check the running conditions, browse 'http://127.0.0.1:8000/docs' and feel free to use the API.
