@@ -1,10 +1,16 @@
+"""
+    Módulo raiz do projeto que deve ser executado usando o comando: fastapi dev app.py
+
+    Inicia as rotas da API e as Threads de gerência de estados.
+"""
+
+
 from fastapi import FastAPI
-from .process import ProcessSensor
-from .cpu import CPUSensor
 from .config import ENV
-from .memory import RAMSensor
+from .sensors import *
 from threading import Thread
 import os, signal
+
 
 app = FastAPI(
     title="PyTop",
@@ -17,15 +23,18 @@ cpuSensor = CPUSensor()
 ramSensor = RAMSensor()
 
 processThread = Thread(
-    target=processSensor.scanProcesses
+    target=processSensor.scanProcesses,
+    daemon = True
 )
 
 cpuThread = Thread(
-    target=cpuSensor.scanCPU
+    target=cpuSensor.scanCPU,
+    daemon = True
 )
 
 ramThread = Thread(
-    target=ramSensor.scanRAM
+    target=ramSensor.scanRAM,
+    daemon = True
 )
 
 processThread.start()
@@ -34,27 +43,37 @@ ramThread.start()
 
 @app.get("/process/")
 def getProcesses():
-    return processSensor.toJson()
+    return processSensor.toList()
 
 @app.get("/cpu/")
 def getCPUInfo():
-    return cpuSensor.toJson()
+    return cpuSensor.toDict()
 
 @app.get("/memory/")
 def getRAMUsage():
-    return ramSensor.toJson()
+    return ramSensor.toDict()
 
-@app.post("/signal/kill")
+@app.post("/signal/kill/{pid}")
 def killProcess(pid: int):
-    os.kill(pid, signal.SIGKILL)
-    return {"message": f"Process {pid} killed successfully!"}
+    try:
+        os.kill(pid, signal.SIGKILL)
+        return {"message": f"Process {pid} killed successfully!"}
+    except:
+        return {"message": f"Process {pid} was not killed successfully!"}
+    
 
-@app.post("/signal/pause")
+@app.post("/signal/pause/{pid}")
 def pauseProcess(pid: int):
-    os.kill(pid, signal.SIGSTOP)
-    return {"message": f"Process {pid} paused successfully!"}
+    try:
+        os.kill(pid, signal.SIGSTOP)
+        return {"message": f"Process {pid} stopped successfully!"}
+    except:
+        return {"message": f"Process {pid} was not stopped successfully!"}
 
-@app.post("/signal/continue")
+@app.post("/signal/continue/{pid}")
 def continueProcess(pid: int):
-    os.kill(pid, signal.SIGCONT)
-    return {"message": f"Process {pid} continued successfully!"}
+    try:
+        os.kill(pid, signal.SIGSTOP)
+        return {"message": f"Process {pid} continued successfully!"}
+    except:
+        return {"message": f"Process {pid} was not continued successfully!"}

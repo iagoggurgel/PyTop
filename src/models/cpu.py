@@ -1,26 +1,10 @@
-from dataclasses import dataclass
-from json import dumps
-from .config import ENV
-from .defaults import Constants
-from time import sleep
+"""
+    Modelo de armazenamento de dados da CPU.
+"""
+
+
+from src.defaults import Constants
 from io import TextIOWrapper
-
-class CPUSensor():
-    def __init__(self) -> None:
-        self.CPU: CPU = None
-
-    def scanCPU(self) -> None:
-        while True:
-            with open(f"{ENV.get('PROC_PATH')}{Constants.CPUINFO}") as FILE:
-                updatedCPU: CPU = CPU(FILE)
-            self.CPU = updatedCPU
-            sleep(5)
-    
-    def toJson(self) -> str:
-        return dumps(
-            obj=self.CPU.toDict()
-        )
-    
 
 class CPUCores():
 
@@ -56,10 +40,7 @@ class CPUCores():
         return _
 
 
-@dataclass
 class CPU():
-    name: str = ''
-    cores: CPUCores = None
 
     def __init__(self, FILE) -> None:
         self.FILE: TextIOWrapper = FILE
@@ -77,19 +58,19 @@ class CPU():
             match parsedLine[Constants.KEY]:
 
                 case Constants.MODELNAME:
-                    self.name = parsedLine[Constants.VALUE]
+                    self.name = parsedLine[Constants.VALUE].strip('\n')
 
                 case Constants.CLOCK:
-                    cpuCore.addClock(parsedLine[Constants.VALUE])
+                    cpuCore.addClock(parsedLine[Constants.VALUE].strip('\n'))
 
                 case Constants.FLAGS:
-                    cpuCore.addFlags(parsedLine[Constants.VALUE])
+                    cpuCore.addFlags(parsedLine[Constants.VALUE].strip('\n'))
 
                 case Constants.CACHESIZE:
-                    cpuCore.addCacheSize(parsedLine[Constants.VALUE])
+                    cpuCore.addCacheSize(parsedLine[Constants.VALUE].strip('\n'))
 
                 case Constants.TLBSIZE:
-                    cpuCore.addTLBSize(parsedLine[Constants.VALUE])
+                    cpuCore.addTLBSize(parsedLine[Constants.VALUE].strip('\n'))
 
         self.cores = cpuCore
 
@@ -106,8 +87,3 @@ class CPU():
             }
         )
 
-
-
-if __name__ == '__main__':
-    cpuSensor = CPUSensor()
-    cpuSensor.scanCPU()

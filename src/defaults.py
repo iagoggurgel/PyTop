@@ -1,3 +1,8 @@
+"""
+    Módulo que mantêm as informações estáticas de Parsing.
+"""
+
+
 from pathlib import Path
 
 class Constants():

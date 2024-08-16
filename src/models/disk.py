@@ -1,28 +1,10 @@
-from dataclasses import dataclass
-from json import dumps
-from .config import ENV
-from .defaults import Constants
-from time import sleep
+"""
+    Modelo de armazenamento de dados do disco.
+"""
+
 from io import TextIOWrapper
+from src.defaults import Constants
 
-class DiskSensor():
-    
-    def __init__(self) -> None:
-        self.disk: Disk = None
-    
-    def scanRAM(self) -> None:
-        while True:
-            with open(f"{ENV.get('PROC_PATH')}{Constants.MEMFILE}") as FILE:
-                updatedDisk: Disk = Disk(FILE)
-            self.disk = updatedDisk
-            sleep(5)
-    
-    def toJson(self) -> str:
-        return dumps(
-            obj=self.disk.toDict(),
-        )
-
-@dataclass()
 class Disk():
     
     def __init__(self, FILE) -> None:

@@ -1,56 +1,22 @@
-from dataclasses import dataclass
-from os import scandir, DirEntry
-from json import dumps
-from .config import ENV
-from .defaults import Constants
-from time import sleep
+"""
+    Modelo de armazenamento de dados dos processos.
+"""
 
-class ProcessSensor():
 
-    def __init__(self) -> None:
-        self.processList: list[Process] = None
+from os import DirEntry
+from src.defaults import Constants
 
-    def scanProcesses(self) -> None:
-        try:
-            while True:
-                processList: list[Process] = list()
-                with scandir(ENV.get('PROC_PATH')) as procDir:
-                    for process in procDir:
-                        if process.is_dir() and process.name.isnumeric():
-                            newProcess = Process(
-                                DIR=process
-                            )
-                            if newProcess.processIsEmpty:
-                                continue
-                            processList.append(newProcess)
-                self.processList = processList
-        except:
-            pass
-            sleep(5)
-    
-    def toJson(self) -> str:
-        _ = list()
-        for process in self.processList:
-            _.append(process.toDict())
-        return dumps(
-            obj=_
-        )
-
-@dataclass()
 class Process():
-    """
-    Class for storing Process Information.
-    """
-    pid: str = ''
-    name: str = ''
-    state: str = ''
-    memSize: str = ''
-    commandLine: str = ''
-    threads: int = 0
-    elapsed: float = 0
 
     def __init__(self, DIR: DirEntry) -> None:
         self.DIR: DirEntry = DIR
+        self.name: str = ''
+        self.state: str = ''
+        self.pid: str = ''
+        self.memSize: str = ''
+        self.commandLine: str = ''
+        self.threads: int = 0
+        self.elapsed: int = 0
         self.setProcessInfo()
 
     def setProcessInfo(self) -> None:
@@ -65,13 +31,13 @@ class Process():
                 parsedLine = parseLine(line)
                 match parsedLine[Constants.KEY]:
                     case Constants.PID:
-                        self.pid = parsedLine[Constants.VALUE]
+                        self.pid = parsedLine[Constants.VALUE].strip('\n')
                     case Constants.NAME:
-                        self.name = parsedLine[Constants.VALUE]
+                        self.name = parsedLine[Constants.VALUE].strip('\n')
                     case Constants.STATE:
-                        self.state = parsedLine[Constants.VALUE]
+                        self.state = parsedLine[Constants.VALUE].strip('\n')
                     case Constants.MEMSIZE:
-                        self.memSize = parsedLine[Constants.VALUE]
+                        self.memSize = parsedLine[Constants.VALUE].strip('\n')
                     case Constants.THREADS:
                         self.threads = int(parsedLine[Constants.VALUE])
                         break
@@ -100,7 +66,3 @@ class Process():
             "elapsed": self.elapsed,
             "commandLine": self.commandLine,
         }
-
-if __name__ == '__main__':
-    sensor = ProcessSensor()
-    print(sensor.toJson())

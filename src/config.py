@@ -1,3 +1,7 @@
+"""
+    Módulo de configuração para pegar informações do .env
+"""
+
 from dotenv import load_dotenv
 from .defaults import Constants, ENVNotFound
 from os import environ
